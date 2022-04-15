@@ -10,7 +10,8 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table(name = "student",
-        uniqueConstraints = {@UniqueConstraint(name = "student_unique_username", columnNames = "user_name")
+        uniqueConstraints = {@UniqueConstraint(name = "student_unique_username", columnNames = "user_name"),
+                @UniqueConstraint(name = "student_unique_email", columnNames = "email"),
 })
 @NoArgsConstructor
 public class Student {
