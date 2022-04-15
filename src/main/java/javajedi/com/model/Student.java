@@ -9,9 +9,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "student",
-        uniqueConstraints = {@UniqueConstraint(name = "student_unique_username", columnNames = "user_name"),
-                @UniqueConstraint(name = "student_unique_email", columnNames = "email")})
+@Table(name = "student")
 @NoArgsConstructor
 public class Student {
 
