@@ -5,13 +5,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "student",
-        uniqueConstraints = {@UniqueConstraint(name = "student_unique_username", columnNames = "user_name"),
-                @UniqueConstraint(name = "student_unique_email", columnNames = "email"),
+        uniqueConstraints = {@UniqueConstraint(name = "student_unique_username", columnNames = "user_name")
 })
 @NoArgsConstructor
 public class Student {
@@ -29,7 +29,7 @@ public class Student {
     @Column(name = "user_name", nullable = false)
     private String username;
 
-    @Column(name = "email", nullable = false, columnDefinition = "TEXT")
-    private String email;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Email> emails;
 
 }
