@@ -21,7 +21,11 @@ public class Email {
     @Column(name = "email_box_name", nullable = false)
     private String emailBoxName;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Student student;
+
     public Email(String emailBoxName) {
         this.emailBoxName = emailBoxName;
     }
+
 }

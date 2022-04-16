@@ -31,15 +31,39 @@ public class Student {
     private String username;
 
     /**
-     * This type of relationship is called - Unidirectional,
-     * since there is only one mapping between two entities.
-     * Student entity has a list of emails and student is the parent entity or owning side
+     * This type of relationship is called - Bidirectional,
+     * It differs from Unidirectional, since two sides are linked with each other, i.e.
+     * Student get all its emails and via emails it is possible to get all the users as well
+     * Student entity is a parent side and email entity is a child entity
+     * - mappedBy is a key word that links two sides of the relationship.
+     * All the actions - {deletion, saving, updating} is propagated via parentSide
+     * Importantly,
+     * While saving a new Student with emails, the most important part to pay attention to is :
+     *
+     * public void addEmail(Email email) {
+     *    emails.add(email);
+     *    email.setStudent(this); //ESSENTIAL
+     * }
+     * if we just execute - emails.add(email) and omit this method - email.setStudent(this);;
+     * we will save a new email in the email-table and a user, but email will have no parent
+     * Email will reference to a null user in the database.
+     * Since we use keyword - mappedBy, we should implicitly set parentEntity for the child entity
+
+     * public void addEmail(Email email) {
+     *    emails.add(email);
+     *    email.setStudent(this);
+     * }
+     * By doing so - executing both emails.add(email); and email.setStudent(this);
+     * we will save all the data correctly.
+     *
+     *
+     *
      * Output:
-     * Three tables will be generated:
+     * Two tables will be generated:
      * - student
      * - email
-     * - student_emails
-     * Executing a new student with some email will generate the following sql
+     *
+     * Saving a new student with some new email / emails will generate the following sql
      * Hibernate:
      *     insert
      *     into
@@ -51,26 +75,32 @@ public class Student {
      *     insert
      *     into
      *         email
-     *         (email_box_name)
-     *     values
-     *         (?)
-     * Hibernate:
-     *     insert
-     *     into
-     *         student_emails
-     *         (student_id, emails_id)
+     *         (email_box_name, student_id)
      *     values
      *         (?, ?)
-     * However, this is not the best way of mapping
      *
-     *
-     * Try to delete a student generates the following sql:
+     * Trying to delete a student generates the following sql:
      * Hibernate:
-     *     delete
+     *     select
+     *         student0_.id as id1_1_,
+     *         student0_.first_name as first_na2_1_,
+     *         student0_.last_name as last_nam3_1_,
+     *         student0_.user_name as user_nam4_1_
      *     from
-     *         student_emails
+     *         student student0_
      *     where
-     *         student_id=?
+     *         student0_.id=?
+     * Hibernate:
+     *     select
+     *         emails0_.student_id as student_3_0_0_,
+     *         emails0_.id as id1_0_0_,
+     *         emails0_.id as id1_0_1_,
+     *         emails0_.email_box_name as email_bo2_0_1_,
+     *         emails0_.student_id as student_3_0_1_
+     *     from
+     *         email emails0_
+     *     where
+     *         emails0_.student_id=?
      * Hibernate:
      *     delete
      *     from
@@ -96,21 +126,21 @@ public class Student {
      *         student student0_
      *     where
      *         student0_.id=?
+     * (The following statement is optional, since if FetchType is LAZY,
+     * the following sql statement will not be generated)
      * Hibernate:
      *     select
-     *         emails0_.student_id as student_1_2_0_,
-     *         emails0_.emails_id as emails_i2_2_0_,
-     *         email1_.id as id1_0_1_,
-     *         email1_.email_box_name as email_bo2_0_1_
+     *         emails0_.student_id as student_3_0_0_,
+     *         emails0_.id as id1_0_0_,
+     *         emails0_.id as id1_0_1_,
+     *         emails0_.email_box_name as email_bo2_0_1_,
+     *         emails0_.student_id as student_3_0_1_
      *     from
-     *         student_emails emails0_
-     *     inner join
-     *         email email1_
-     *             on emails0_.emails_id=email1_.id
+     *         email emails0_
      *     where
      *         emails0_.student_id=?
      * */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Email> emails;
 
     public Student(String firstName, String lastName, String username) {
@@ -122,6 +152,7 @@ public class Student {
 
     public void addEmail(Email email) {
         emails.add(email);
+        email.setStudent(this);
     }
 
 }
