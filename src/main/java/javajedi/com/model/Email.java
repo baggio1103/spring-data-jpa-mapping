@@ -21,4 +21,7 @@ public class Email {
     @Column(name = "email_box_name", nullable = false)
     private String emailBoxName;
 
+    public Email(String emailBoxName) {
+        this.emailBoxName = emailBoxName;
+    }
 }
