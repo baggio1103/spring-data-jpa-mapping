@@ -62,6 +62,53 @@ public class Student {
      *     values
      *         (?, ?)
      * However, this is not the best way of mapping
+     *
+     *
+     * Try to delete a student generates the following sql:
+     * Hibernate:
+     *     delete
+     *     from
+     *         student_emails
+     *     where
+     *         student_id=?
+     * Hibernate:
+     *     delete
+     *     from
+     *         email
+     *     where
+     *         id=?
+     * Hibernate:
+     *     delete
+     *     from
+     *         student
+     *     where
+     *         id=?
+     * Totally inefficient, since 3 different sql statements are generated
+     *
+     * Getting a specific student generates the following sql:
+     * Hibernate:
+     *     select
+     *         student0_.id as id1_1_0_,
+     *         student0_.first_name as first_na2_1_0_,
+     *         student0_.last_name as last_nam3_1_0_,
+     *         student0_.user_name as user_nam4_1_0_
+     *     from
+     *         student student0_
+     *     where
+     *         student0_.id=?
+     * Hibernate:
+     *     select
+     *         emails0_.student_id as student_1_2_0_,
+     *         emails0_.emails_id as emails_i2_2_0_,
+     *         email1_.id as id1_0_1_,
+     *         email1_.email_box_name as email_bo2_0_1_
+     *     from
+     *         student_emails emails0_
+     *     inner join
+     *         email email1_
+     *             on emails0_.emails_id=email1_.id
+     *     where
+     *         emails0_.student_id=?
      * */
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Email> emails;

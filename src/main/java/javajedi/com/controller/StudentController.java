@@ -19,13 +19,18 @@ public class StudentController {
         return studentRepository.findAll();
     }
 
+    @GetMapping("/{id}")
+    public Student findById(@PathVariable("id") Integer id) {
+        return studentRepository.findById(id).get();
+    }
+
     @PostMapping("")
     public Student saveStudent(@RequestBody Student student) {
         return studentRepository.save(student);
     }
 
-    @DeleteMapping
-    public void deleteStudent(Integer id) {
+    @DeleteMapping("/{id}")
+    public void deleteStudent(@PathVariable("id") Integer id) {
         studentRepository.deleteById(id);
     }
 
